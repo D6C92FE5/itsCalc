@@ -23,7 +23,17 @@ namespace AlCalc
         //默认缓冲区大小
         private const int StringLength = 0x20;
         //输入缓冲区
-        private string currentText = "0";
+        private string currentText
+        {
+            get
+            {
+                return labelResult.Text;
+            }
+            set
+            {
+                labelResult.Text = value;
+            }
+        }
         //当前数字
         private double currentNumber = 0;
         //前一数字
@@ -69,11 +79,7 @@ namespace AlCalc
             labelResult.Font = new System.Drawing.Font(labelResult.Font.FontFamily, emSize);
 
             //
-            labelResult.Text = text;
-        }
-
-        private void UpdateExpression()
-        {
+            currentText = text;
             labelExpression.Text = string.Join(" ", previousInputs);
         }
 
@@ -157,50 +163,50 @@ namespace AlCalc
         }
 
         //一元运算符(相反数 平方根 倒数 百分数)
-        //一元运算符是操作currentNumber的
         private void buttonUnaryOperators_Click(object sender, EventArgs e)
         {
-            //不同情况以不同方式设置currentNumber
-            switch (typeLastInput)
+            //输入数字取反特殊处理
+            if (typeLastInput == LastInput.number && sender == buttonInverse)
             {
-                case LastInput.number:
-                    currentNumber = double.Parse(currentText);
-                    break;
-                case LastInput.unaryOperators:
-                    break;
-                case LastInput.binaryOperators:
-                    break;
-                case LastInput.equal:
-                    currentNumber = previousNumber;
-                    binaryOperator = "";
-                    break;
-            }
-
-            //操作currentNumber
-            if (sender == buttonInverse)
-                currentNumber = -currentNumber;
-            else if (sender == buttonRadical)
-                currentNumber = System.Math.Sqrt(currentNumber);
-            else if (sender == buttonReciprocal)
-                currentNumber = 1 / currentNumber;
-            else if (sender == buttonPercent)
-                currentNumber = previousNumber * currentNumber * 0.01;
-
-            //显示计算结果
-            UpdateResult(currentNumber);
-
-            //取反之后可以继续输入数字
-            if ((typeLastInput == LastInput.number) && (sender == buttonInverse))
-            {
-                if (currentText != "0")
-                    if (currentText[0] != '-')
-                        currentText = currentText.Insert(0, "-");
-                    else
-                        currentText = currentText.Remove(0, 1);
+                if (currentText.StartsWith("-"))
+                    currentText = currentText.Remove(0, 1);
+                else
+                    currentText = "-" + currentText;
+                UpdateResult(currentText);
             }
             else
+            {
+                //选择操作目标
+                double number = (typeLastInput == LastInput.number) ? 
+                    currentNumber : previousNumber;
+
+                //操作number
+                if (sender == buttonInverse)
+                    number = -number;
+                else if (sender == buttonRadical)
+                    number = System.Math.Sqrt(number);
+                else if (sender == buttonReciprocal)
+                    number = 1 / number;
+                else if (sender == buttonPercent)
+                    number = previousNumber * currentNumber * 0.01;
+
+                //更新表达式
+                if (typeLastInput == LastInput.unaryOperators)
+                    previousInputs.RemoveAt(previousInputs.Count);
+                previousInputs.Add(number.ToString());
+
+                //更新结果框
+                UpdateResult(number);
+
+                //回写到操作目标
+                if (typeLastInput == LastInput.number)
+                    currentNumber = number;
+                else
+                    previousNumber = number;
+
                 //按了一元运算符
                 typeLastInput = LastInput.unaryOperators;
+            }
         }
 
         //二元运算符(加 减 乘 除)
@@ -240,7 +246,6 @@ namespace AlCalc
 
             //显示计算结果
             UpdateResult(previousNumber);
-            UpdateExpression();
         }
 
         //等号
@@ -267,7 +272,6 @@ namespace AlCalc
 
             //显示计算结果
             UpdateResult(previousNumber);
-            UpdateExpression();
 
             //按了等号
             typeLastInput = LastInput.equal;
@@ -305,7 +309,6 @@ namespace AlCalc
             typeLastInput = LastInput.number;
             previousInputs.Clear();
             UpdateResult(currentText);
-            UpdateExpression();
         }
 
         //快捷键
