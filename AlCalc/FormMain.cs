@@ -14,7 +14,6 @@ namespace AlCalc
         //最后输入的元素的类型
         enum LastInput
         {
-            clear,
             number,
             unaryOperators,
             binaryOperators,
@@ -40,7 +39,7 @@ namespace AlCalc
             }
         }
         //上次输入的类型
-        private LastInput typeLastInput = LastInput.clear;
+        private LastInput typeLastInput = LastInput.number;
         //之前的表达式
         private string previousExpression = "";
 
@@ -159,8 +158,6 @@ namespace AlCalc
             //不同情况以不同方式设置currentNumber
             switch (typeLastInput)
             {
-                case LastInput.clear:
-                    break;
                 case LastInput.number:
                     currentNumber = double.Parse(currentText);
                     break;
@@ -208,8 +205,6 @@ namespace AlCalc
             //不同情况以不同方式设置currentNumber
             switch (typeLastInput)
             {
-                case LastInput.clear:
-                    break;
                 case LastInput.number:
                     currentNumber = double.Parse(currentText);
                     break;
@@ -223,9 +218,6 @@ namespace AlCalc
                     break;
             }
 
-            previousExpression += " " + currentNumber;
-            labelExpression.Text = (previousExpression + " " + binaryOperator).Trim();
-
             //计算previousNumber currentNumber
             BinaryCalc();
             currentNumber = previousNumber;
@@ -238,6 +230,9 @@ namespace AlCalc
 
             //按了二元运算符
             typeLastInput = LastInput.binaryOperators;
+
+            previousExpression += " " + previousExpression;
+            labelExpression.Text = (previousExpression + " " + binaryOperator).Trim();
         }
 
         //等号
@@ -246,8 +241,6 @@ namespace AlCalc
             //不同情况以不同方式设置currentNumber
             switch (typeLastInput)
             {
-                case LastInput.clear:
-                    break;
                 case LastInput.number:
                     currentNumber = double.Parse(currentText);
                     break;
@@ -287,7 +280,7 @@ namespace AlCalc
         {
             currentText = "0";
             currentNumber = 0;
-            typeLastInput = LastInput.clear;
+            typeLastInput = LastInput.number;
             UpdateLabel(currentText);
         }
 
@@ -298,7 +291,7 @@ namespace AlCalc
             currentNumber = 0;
             previousNumber = 0;
             binaryOperator = ' ';
-            typeLastInput = LastInput.clear;
+            typeLastInput = LastInput.number;
             previousExpression = "";
             UpdateLabel(currentText);
         }
