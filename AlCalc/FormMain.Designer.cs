@@ -53,7 +53,10 @@
             this.buttonBack = new System.Windows.Forms.Button();
             this.buttonInverse = new System.Windows.Forms.Button();
             this.labelResult = new System.Windows.Forms.Label();
+            this.labelExpression = new System.Windows.Forms.Label();
+            this.panelOutput = new System.Windows.Forms.Panel();
             this.panelButton.SuspendLayout();
+            this.panelOutput.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonNumber1
@@ -238,6 +241,8 @@
             // 
             // panelButton
             // 
+            this.panelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panelButton.Controls.Add(this.buttonPlus);
             this.panelButton.Controls.Add(this.buttonMinus);
             this.panelButton.Controls.Add(this.buttonMultiply);
@@ -261,7 +266,7 @@
             this.panelButton.Controls.Add(this.buttonNumber1);
             this.panelButton.Controls.Add(this.buttonNumber2);
             this.panelButton.Controls.Add(this.buttonNumber3);
-            this.panelButton.Location = new System.Drawing.Point(9, 49);
+            this.panelButton.Location = new System.Drawing.Point(9, 61);
             this.panelButton.Name = "panelButton";
             this.panelButton.Size = new System.Drawing.Size(202, 163);
             this.panelButton.TabIndex = 12;
@@ -492,25 +497,52 @@
             // 
             // labelResult
             // 
+            this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(253)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
-            this.labelResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.labelResult.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelResult.Font = new System.Drawing.Font("Consolas", 18F);
             this.labelResult.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.labelResult.Location = new System.Drawing.Point(11, 11);
-            this.labelResult.Margin = new System.Windows.Forms.Padding(2, 2, 3, 3);
+            this.labelResult.Location = new System.Drawing.Point(0, 15);
+            this.labelResult.Margin = new System.Windows.Forms.Padding(0);
             this.labelResult.Name = "labelResult";
-            this.labelResult.Size = new System.Drawing.Size(190, 32);
+            this.labelResult.Size = new System.Drawing.Size(188, 32);
             this.labelResult.TabIndex = 0;
             this.labelResult.Text = "0";
-            this.labelResult.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.labelResult.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelExpression
+            // 
+            this.labelExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(253)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
+            this.labelExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
+            this.labelExpression.Location = new System.Drawing.Point(0, 0);
+            this.labelExpression.Margin = new System.Windows.Forms.Padding(0);
+            this.labelExpression.Name = "labelExpression";
+            this.labelExpression.Size = new System.Drawing.Size(188, 16);
+            this.labelExpression.TabIndex = 13;
+            this.labelExpression.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // panelOutput
+            // 
+            this.panelOutput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelOutput.Controls.Add(this.labelExpression);
+            this.panelOutput.Controls.Add(this.labelResult);
+            this.panelOutput.Location = new System.Drawing.Point(11, 11);
+            this.panelOutput.Name = "panelOutput";
+            this.panelOutput.Size = new System.Drawing.Size(190, 47);
+            this.panelOutput.TabIndex = 14;
             // 
             // FormMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(228)))), ((int)(((byte)(241)))));
-            this.ClientSize = new System.Drawing.Size(212, 218);
-            this.Controls.Add(this.labelResult);
+            this.ClientSize = new System.Drawing.Size(212, 230);
+            this.Controls.Add(this.panelOutput);
             this.Controls.Add(this.panelButton);
             this.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(56)))), ((int)(((byte)(90)))));
@@ -519,6 +551,7 @@
             this.Name = "FormMain";
             this.Text = "计算器";
             this.panelButton.ResumeLayout(false);
+            this.panelOutput.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -550,6 +583,8 @@
         private System.Windows.Forms.Button buttonMultiply;
         private System.Windows.Forms.Button buttonDivide;
         private System.Windows.Forms.Label labelResult;
+        private System.Windows.Forms.Label labelExpression;
+        private System.Windows.Forms.Panel panelOutput;
     }
 }
 
