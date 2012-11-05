@@ -1,5 +1,5 @@
 ﻿using System;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 //using System.ComponentModel;
 //using System.Data;
 //using System.Drawing;
@@ -29,7 +29,7 @@ namespace AlCalc
         //前一数字
         private double previousNumber = 0;
         //操作符
-        private char binaryOperator = ' ';
+        private string binaryOperator = "";
         //是否输入过小数点
         private bool isInputedDot
         {
@@ -41,7 +41,7 @@ namespace AlCalc
         //上次输入的类型
         private LastInput typeLastInput = LastInput.number;
         //之前的表达式
-        private string previousExpression = "";
+        private List<string> previousInputs = new List<string>();
 
         public FormMain()
         {
@@ -49,7 +49,7 @@ namespace AlCalc
         }
 
         //更新labelResult的内容
-        private void UpdateLabel(object objectToShow)
+        private void UpdateResult(object objectToShow)
         {
             //格式化
             string text;
@@ -72,24 +72,29 @@ namespace AlCalc
             labelResult.Text = text;
         }
 
+        private void UpdateExpression()
+        {
+            labelExpression.Text = string.Join(" ", previousInputs);
+        }
+
         //二元计算 previousNumber = previousNumber <binaryOperator> currentNumber
-        private void BinaryCalc(ref double a, double b, char opt)
+        private void BinaryCalc(ref double a, double b, string opt)
         {
             switch (opt)
             {
-                case '+':
+                case "+":
                     a += b;
                     break;
-                case '-':
+                case "-":
                     a -= b;
                     break;
-                case '*':
+                case "*":
                     a *= b;
                     break;
-                case '/':
+                case "/":
                     a /= b;
                     break;
-                case ' ':
+                case "":
                     a = b;
                     break;
             }
@@ -124,7 +129,7 @@ namespace AlCalc
                 System.Media.SystemSounds.Beep.Play();
 
             //显示计算结果
-            UpdateLabel(currentText);
+            UpdateResult(currentText);
 
             //按了数字键
             typeLastInput = LastInput.number;
@@ -142,7 +147,7 @@ namespace AlCalc
                 currentText += ".";
 
                 //显示计算结果
-                UpdateLabel(currentText);
+                UpdateResult(currentText);
 
                 //按了数字键
                 typeLastInput = LastInput.number;
@@ -167,7 +172,7 @@ namespace AlCalc
                     break;
                 case LastInput.equal:
                     currentNumber = previousNumber;
-                    binaryOperator = ' ';
+                    binaryOperator = "";
                     break;
             }
 
@@ -182,7 +187,7 @@ namespace AlCalc
                 currentNumber = previousNumber * currentNumber * 0.01;
 
             //显示计算结果
-            UpdateLabel(currentNumber);
+            UpdateResult(currentNumber);
 
             //取反之后可以继续输入数字
             if ((typeLastInput == LastInput.number) && (sender == buttonInverse))
@@ -207,14 +212,18 @@ namespace AlCalc
             {
                 case LastInput.number:
                     currentNumber = double.Parse(currentText);
+                    previousInputs.Add(currentNumber.ToString());
                     break;
                 case LastInput.unaryOperators:
+                    binaryOperator = "";
+                    break;
                 case LastInput.binaryOperators:
-                    binaryOperator = ' ';
+                    previousInputs.RemoveAt(previousInputs.Count - 1);
+                    binaryOperator = "";
                     break;
                 case LastInput.equal:
                     currentNumber = previousNumber;
-                    binaryOperator = ' ';
+                    binaryOperator = "";
                     break;
             }
 
@@ -222,17 +231,16 @@ namespace AlCalc
             BinaryCalc();
             currentNumber = previousNumber;
 
-            //显示计算结果
-            UpdateLabel(previousNumber);
-
             //设置二元运算符
-            binaryOperator = (sender as Button).Text[0];
+            binaryOperator = (sender as Button).Text;
+            previousInputs.Add(binaryOperator);
 
             //按了二元运算符
             typeLastInput = LastInput.binaryOperators;
 
-            previousExpression += " " + previousExpression;
-            labelExpression.Text = (previousExpression + " " + binaryOperator).Trim();
+            //显示计算结果
+            UpdateResult(previousNumber);
+            UpdateExpression();
         }
 
         //等号
@@ -255,8 +263,11 @@ namespace AlCalc
             //计算
             BinaryCalc();
 
+            previousInputs.Clear();
+
             //显示计算结果
-            UpdateLabel(previousNumber);
+            UpdateResult(previousNumber);
+            UpdateExpression();
 
             //按了等号
             typeLastInput = LastInput.equal;
@@ -268,8 +279,8 @@ namespace AlCalc
             if (typeLastInput == LastInput.number)
             {
                 currentText = currentText.Remove(currentText.Length - 1, 1);
-                if (currentText.Length == 0) currentText += "0";
-                UpdateLabel(currentText);
+                if (currentText.Length == 0) currentText = "0";
+                UpdateResult(currentText);
             }
             else
                 System.Media.SystemSounds.Beep.Play();
@@ -281,7 +292,7 @@ namespace AlCalc
             currentText = "0";
             currentNumber = 0;
             typeLastInput = LastInput.number;
-            UpdateLabel(currentText);
+            UpdateResult(currentText);
         }
 
         //清除所有
@@ -290,10 +301,11 @@ namespace AlCalc
             currentText = "0";
             currentNumber = 0;
             previousNumber = 0;
-            binaryOperator = ' ';
+            binaryOperator = "";
             typeLastInput = LastInput.number;
-            previousExpression = "";
-            UpdateLabel(currentText);
+            previousInputs.Clear();
+            UpdateResult(currentText);
+            UpdateExpression();
         }
 
         //快捷键
