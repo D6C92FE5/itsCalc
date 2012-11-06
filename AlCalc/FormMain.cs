@@ -37,7 +37,7 @@ namespace AlCalc
 
                 string text = value;
 
-                if (text == "-0")
+                if (text == "-0" || text == "-")
                     text = "0";
 
                 //调整字号
