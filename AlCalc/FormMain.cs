@@ -102,7 +102,10 @@ namespace AlCalc
                     result = a / b;
                     if (b == 0)
                     {
-                        currentText = "除数不能为零";
+                        if (a == 0)
+                            currentText = "结果未定义";
+                        else
+                            currentText = "除数不能为零";
                         isError = true;
                     }
                     break;
