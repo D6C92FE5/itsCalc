@@ -20,8 +20,6 @@ namespace AlCalc
             equal,
         };
 
-        //默认缓冲区大小
-        private const int StringLength = 0x20;
         //输入缓冲区
         private string currentText
         {
@@ -38,8 +36,10 @@ namespace AlCalc
         private double currentNumber = 0;
         //前一数字
         private double previousNumber = 0;
-        //操作符
-        private string binaryOperator = "";
+        //二元操作符
+        private string binaryOperator = null;
+        //二元操作数
+        private double? binaryNumber = null;
         //是否输入过小数点
         private bool isInputedDot
         {
@@ -84,39 +84,34 @@ namespace AlCalc
         }
 
         //二元计算 previousNumber = previousNumber <binaryOperator> currentNumber
-        private void BinaryCalc(ref double a, double b, string opt)
+        private double BinaryCalc(double a, double b, string opt)
         {
+            double result = a;
             switch (opt)
             {
                 case "+":
-                    a += b;
+                    result = a + b;
                     break;
                 case "-":
-                    a -= b;
+                    result = a - b;
                     break;
                 case "*":
-                    a *= b;
+                    result = a * b;
                     break;
                 case "/":
-                    a /= b;
-                    break;
-                case "":
-                    a = b;
+                    result = a / b;
                     break;
             }
+            return result;
         }
-        private void BinaryCalc()
+        private double BinaryCalc(double number)
         {
-            BinaryCalc(ref previousNumber, currentNumber, binaryOperator);
+            return BinaryCalc(number, (double)binaryNumber, binaryOperator);
         }
 
         //输入数字
         private void buttonNumbers_Click(object sender, EventArgs e)
         {
-            //按完等号再按数字相当于开始一次全新的计算
-            if (typeLastInput == LastInput.equal)
-                buttonClear_Click(buttonClear, null);
-
             //按了非数字键再按数字键会输入一个新的数字
             if (typeLastInput != LastInput.number)
                 buttonClearentry_Click(buttonClearentry, null);
@@ -142,13 +137,13 @@ namespace AlCalc
         }
         private void buttonDot_Click(object sender, EventArgs e)
         {
+            //上次按的不是数字先输入0
+            if (typeLastInput != LastInput.number)
+                buttonNumbers_Click(buttonNumber0, null);
+
             //最多可以有一个小数点
             if (!isInputedDot)
             {
-                //上次按的不是数字先输入0
-                if (typeLastInput != LastInput.number)
-                    buttonNumbers_Click(buttonNumber0, null);
-
                 //输入小数点
                 currentText += ".";
 
@@ -176,33 +171,26 @@ namespace AlCalc
             }
             else
             {
-                //选择操作目标
-                double number = (typeLastInput == LastInput.number) ? 
-                    currentNumber : previousNumber;
+                if (typeLastInput == LastInput.number)
+                    currentNumber = double.Parse(currentText);
 
                 //操作number
                 if (sender == buttonInverse)
-                    number = -number;
+                    currentNumber = -currentNumber;
                 else if (sender == buttonRadical)
-                    number = System.Math.Sqrt(number);
+                    currentNumber = System.Math.Sqrt(currentNumber);
                 else if (sender == buttonReciprocal)
-                    number = 1 / number;
+                    currentNumber = 1 / currentNumber;
                 else if (sender == buttonPercent)
-                    number = previousNumber * currentNumber * 0.01;
+                    currentNumber = previousNumber * currentNumber * 0.01;
 
                 //更新表达式
                 if (typeLastInput == LastInput.unaryOperators)
-                    previousInputs.RemoveAt(previousInputs.Count);
-                previousInputs.Add(number.ToString());
+                    previousInputs.RemoveAt(previousInputs.Count - 1);
+                previousInputs.Add(currentNumber.ToString());
 
                 //更新结果框
-                UpdateResult(number);
-
-                //回写到操作目标
-                if (typeLastInput == LastInput.number)
-                    currentNumber = number;
-                else
-                    previousNumber = number;
+                UpdateResult(currentNumber);
 
                 //按了一元运算符
                 typeLastInput = LastInput.unaryOperators;
@@ -210,68 +198,61 @@ namespace AlCalc
         }
 
         //二元运算符(加 减 乘 除)
-        //先计算并显示previousNumber, 再设置二元运算符
         private void buttonBinaryOperators_Click(object sender, EventArgs e)
         {
-            //不同情况以不同方式设置currentNumber
-            switch (typeLastInput)
+            if (typeLastInput == LastInput.number)
             {
-                case LastInput.number:
-                    currentNumber = double.Parse(currentText);
-                    previousInputs.Add(currentNumber.ToString());
-                    break;
-                case LastInput.unaryOperators:
-                    binaryOperator = "";
-                    break;
-                case LastInput.binaryOperators:
-                    previousInputs.RemoveAt(previousInputs.Count - 1);
-                    binaryOperator = "";
-                    break;
-                case LastInput.equal:
-                    currentNumber = previousNumber;
-                    binaryOperator = "";
-                    break;
+                currentNumber = double.Parse(currentText);
+                previousInputs.Add(currentNumber.ToString());
             }
+            if (typeLastInput == LastInput.number || typeLastInput == LastInput.unaryOperators)
+                if (binaryOperator != null)
+                {
+                    binaryNumber = currentNumber;
+                    currentNumber = BinaryCalc(previousNumber);
+                }
+            if (typeLastInput == LastInput.binaryOperators)
+                previousInputs.RemoveAt(previousInputs.Count - 1);
+            if (typeLastInput == LastInput.equal)
+                previousInputs.Add(currentNumber.ToString());
 
-            //计算previousNumber currentNumber
-            BinaryCalc();
-            currentNumber = previousNumber;
+            previousNumber = currentNumber;
 
             //设置二元运算符
             binaryOperator = (sender as Button).Text;
             previousInputs.Add(binaryOperator);
 
-            //按了二元运算符
-            typeLastInput = LastInput.binaryOperators;
+            //等待操作数
+            binaryNumber = null;
 
             //显示计算结果
-            UpdateResult(previousNumber);
+            UpdateResult(currentNumber);
+
+            //按了二元运算符
+            typeLastInput = LastInput.binaryOperators;
         }
 
         //等号
         private void buttonEqual_Click(object sender, EventArgs e)
         {
-            //不同情况以不同方式设置currentNumber
-            switch (typeLastInput)
+            if (typeLastInput == LastInput.number)
+                currentNumber = double.Parse(currentText);
+            if (binaryNumber == null)
             {
-                case LastInput.number:
-                    currentNumber = double.Parse(currentText);
-                    break;
-                case LastInput.unaryOperators:
-                    break;
-                case LastInput.binaryOperators:
-                    break;
-                case LastInput.equal:
-                    break;
+                binaryNumber = currentNumber;
+                if (binaryOperator != null)
+                    currentNumber = BinaryCalc(previousNumber);
             }
-
-            //计算
-            BinaryCalc();
-
+            else
+            {
+                if (binaryOperator != null)
+                    currentNumber = BinaryCalc(currentNumber);
+            }
+            
             previousInputs.Clear();
 
             //显示计算结果
-            UpdateResult(previousNumber);
+            UpdateResult(currentNumber);
 
             //按了等号
             typeLastInput = LastInput.equal;
@@ -305,7 +286,8 @@ namespace AlCalc
             currentText = "0";
             currentNumber = 0;
             previousNumber = 0;
-            binaryOperator = "";
+            binaryOperator = null;
+            binaryNumber = null;
             typeLastInput = LastInput.number;
             previousInputs.Clear();
             UpdateResult(currentText);
