@@ -204,20 +204,18 @@ namespace AlCalc
         private void buttonBinaryOperators_Click(object sender, EventArgs e)
         {
             if (typeLastInput == LastInput.number)
-            {
                 currentNumber = double.Parse(currentText);
+            if (previousInputs.Count == 0)
                 previousInputs.Add(currentNumber.ToString());
-            }
-            if (typeLastInput == LastInput.number || typeLastInput == LastInput.unaryOperators)
-                if (binaryOperator != null)
+            if (typeLastInput == LastInput.number || typeLastInput == LastInput.unaryOperators
+                || typeLastInput == LastInput.equal)
+                if (previousInputs.Count > 1)
                 {
                     binaryNumber = currentNumber;
                     currentNumber = BinaryCalc(previousNumber);
                 }
             if (typeLastInput == LastInput.binaryOperators)
                 previousInputs.RemoveAt(previousInputs.Count - 1);
-            if (typeLastInput == LastInput.equal)
-                previousInputs.Add(currentNumber.ToString());
 
             previousNumber = currentNumber;
 
