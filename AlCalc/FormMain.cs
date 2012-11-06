@@ -163,10 +163,13 @@ namespace AlCalc
             //输入数字取反特殊处理
             if (typeLastInput == LastInput.number && sender == buttonInverse)
             {
-                if (currentText.StartsWith("-"))
-                    currentText = currentText.Remove(0, 1);
-                else
-                    currentText = "-" + currentText;
+                if (currentText != "0")
+                {
+                    if (currentText.StartsWith("-"))
+                        currentText = currentText.Remove(0, 1);
+                    else
+                        currentText = "-" + currentText;
+                }
                 UpdateResult(currentText);
             }
             else
