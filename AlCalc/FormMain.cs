@@ -17,7 +17,6 @@ namespace AlCalc
             number,
             unaryOperators,
             binaryOperators,
-            error,
         };
 
         //输入缓冲区
@@ -29,6 +28,13 @@ namespace AlCalc
             }
             set
             {
+                //出错后只可清除
+                if (isError)
+                {
+                    System.Media.SystemSounds.Beep.Play();
+                    return;
+                }
+
                 string text = value;
 
                 if (text == "-0")
@@ -69,6 +75,8 @@ namespace AlCalc
         private LastInput typeLastInput = LastInput.number;
         //之前的表达式
         private List<string> previousInputs = new List<string>();
+        //是否发生过错误
+        private bool isError = false;
 
         public FormMain()
         {
@@ -92,6 +100,11 @@ namespace AlCalc
                     break;
                 case "/":
                     result = a / b;
+                    if (b == 0)
+                    {
+                        currentText = "除数不能为零";
+                        isError = true;
+                    }
                     break;
             }
             return result;
@@ -104,6 +117,13 @@ namespace AlCalc
         //输入数字
         private void buttonNumbers_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             //按了非数字键再按数字键会输入一个新的数字
             if (typeLastInput != LastInput.number)
                 buttonClearentry_Click(buttonClearentry, null);
@@ -126,6 +146,13 @@ namespace AlCalc
         }
         private void buttonDot_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             //上次按的不是数字先输入0
             if (typeLastInput != LastInput.number)
                 buttonNumbers_Click(buttonNumber0, null);
@@ -146,6 +173,13 @@ namespace AlCalc
         //一元运算符(相反数 平方根 倒数 百分数)
         private void buttonUnaryOperators_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             //输入数字取反特殊处理
             if (typeLastInput == LastInput.number && sender == buttonInverse)
             {
@@ -163,9 +197,23 @@ namespace AlCalc
                 if (sender == buttonInverse)
                     currentNumber = -currentNumber;
                 else if (sender == buttonRadical)
+                {
+                    if (currentNumber < 0)
+                    {
+                        currentText = "无效输入";
+                        isError = true;
+                    }
                     currentNumber = System.Math.Sqrt(currentNumber);
+                }
                 else if (sender == buttonReciprocal)
+                {
+                    if (currentNumber == 0)
+                    {
+                        currentText = "除数不能为零";
+                        isError = true;
+                    }
                     currentNumber = 1 / currentNumber;
+                }
                 else if (sender == buttonPercent)
                     currentNumber = previousNumber * currentNumber * 0.01;
 
@@ -184,6 +232,13 @@ namespace AlCalc
         //二元运算符(加 减 乘 除)
         private void buttonBinaryOperators_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             if (typeLastInput == LastInput.number)
                 currentNumber = double.Parse(currentText);
             if (previousInputs.Count == 0)
@@ -215,6 +270,13 @@ namespace AlCalc
         //等号
         private void buttonEqual_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             if (typeLastInput == LastInput.number)
                 currentNumber = double.Parse(currentText);
             if (binaryNumber == null)
@@ -240,6 +302,13 @@ namespace AlCalc
         //退格
         private void buttonBack_Click(object sender, EventArgs e)
         {
+            //出错后只可清除
+            if (isError)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                return;
+            }
+
             if (typeLastInput == LastInput.number)
             {
                 currentText = currentText.Remove(currentText.Length - 1, 1);
@@ -252,6 +321,8 @@ namespace AlCalc
         //清除当前
         private void buttonClearentry_Click(object sender, EventArgs e)
         {
+            if (isError)
+                buttonClear_Click(buttonClear, null);
             currentText = "0";
             currentNumber = 0;
             typeLastInput = LastInput.number;
@@ -260,13 +331,14 @@ namespace AlCalc
         //清除所有
         private void buttonClear_Click(object sender, EventArgs e)
         {
+            isError = false;
+            previousInputs.Clear();
             currentText = "0";
             currentNumber = 0;
             previousNumber = 0;
             binaryOperator = null;
             binaryNumber = null;
             typeLastInput = LastInput.number;
-            previousInputs.Clear();
         }
 
         //快捷键
