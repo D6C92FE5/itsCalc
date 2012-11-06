@@ -17,7 +17,7 @@ namespace AlCalc
             number,
             unaryOperators,
             binaryOperators,
-            equal,
+            error,
         };
 
         //输入缓冲区
@@ -29,7 +29,24 @@ namespace AlCalc
             }
             set
             {
-                labelResult.Text = value;
+                string text = value;
+
+                if (text == "-0")
+                    text = "0";
+
+                //调整字号
+                float emSize = 18;
+                if (text.Length > 12)
+                    emSize = 14;
+                if (text.Length > 16)
+                    emSize = 11;
+                if (text.Length > 19)
+                    emSize = 9;
+                labelResult.Font = new System.Drawing.Font(labelResult.Font.FontFamily, emSize);
+
+                //
+                labelExpression.Text = string.Join(" ", previousInputs);
+                labelResult.Text = text;
             }
         }
         //当前数字
@@ -56,31 +73,6 @@ namespace AlCalc
         public FormMain()
         {
             InitializeComponent();
-        }
-
-        //更新labelResult的内容
-        private void UpdateResult(object objectToShow)
-        {
-            //格式化
-            string text;
-            if (objectToShow is double)
-                text = ((double)objectToShow).ToString();
-            else
-                text = objectToShow.ToString();
-
-            //调整字号
-            float emSize = 18;
-            if (text.Length > 12)
-                emSize = 14;
-            if (text.Length > 16)
-                emSize = 11;
-            if (text.Length > 19)
-                emSize = 9;
-            labelResult.Font = new System.Drawing.Font(labelResult.Font.FontFamily, emSize);
-
-            //
-            currentText = text;
-            labelExpression.Text = string.Join(" ", previousInputs);
         }
 
         //二元计算 previousNumber = previousNumber <binaryOperator> currentNumber
@@ -129,9 +121,6 @@ namespace AlCalc
             else
                 System.Media.SystemSounds.Beep.Play();
 
-            //显示计算结果
-            UpdateResult(currentText);
-
             //按了数字键
             typeLastInput = LastInput.number;
         }
@@ -147,9 +136,6 @@ namespace AlCalc
                 //输入小数点
                 currentText += ".";
 
-                //显示计算结果
-                UpdateResult(currentText);
-
                 //按了数字键
                 typeLastInput = LastInput.number;
             }
@@ -163,14 +149,10 @@ namespace AlCalc
             //输入数字取反特殊处理
             if (typeLastInput == LastInput.number && sender == buttonInverse)
             {
-                if (currentText != "0")
-                {
-                    if (currentText.StartsWith("-"))
-                        currentText = currentText.Remove(0, 1);
-                    else
-                        currentText = "-" + currentText;
-                }
-                UpdateResult(currentText);
+                if (currentText.StartsWith("-"))
+                    currentText = currentText.Remove(0, 1);
+                else
+                    currentText = "-" + currentText;
             }
             else
             {
@@ -188,12 +170,11 @@ namespace AlCalc
                     currentNumber = previousNumber * currentNumber * 0.01;
 
                 //更新表达式
-                if (typeLastInput == LastInput.unaryOperators)
+                if (typeLastInput == LastInput.unaryOperators && previousInputs.Count > 0)
                     previousInputs.RemoveAt(previousInputs.Count - 1);
                 previousInputs.Add(currentNumber.ToString());
 
-                //更新结果框
-                UpdateResult(currentNumber);
+                currentText = currentNumber.ToString();
 
                 //按了一元运算符
                 typeLastInput = LastInput.unaryOperators;
@@ -207,8 +188,7 @@ namespace AlCalc
                 currentNumber = double.Parse(currentText);
             if (previousInputs.Count == 0)
                 previousInputs.Add(currentNumber.ToString());
-            if (typeLastInput == LastInput.number || typeLastInput == LastInput.unaryOperators
-                || typeLastInput == LastInput.equal)
+            if (typeLastInput == LastInput.number || typeLastInput == LastInput.unaryOperators)
                 if (previousInputs.Count > 1)
                 {
                     binaryNumber = currentNumber;
@@ -226,8 +206,7 @@ namespace AlCalc
             //等待操作数
             binaryNumber = null;
 
-            //显示计算结果
-            UpdateResult(currentNumber);
+            currentText = currentNumber.ToString();
 
             //按了二元运算符
             typeLastInput = LastInput.binaryOperators;
@@ -252,11 +231,10 @@ namespace AlCalc
             
             previousInputs.Clear();
 
-            //显示计算结果
-            UpdateResult(currentNumber);
+            currentText = currentNumber.ToString();
 
             //按了等号
-            typeLastInput = LastInput.equal;
+            typeLastInput = LastInput.unaryOperators;
         }
 
         //退格
@@ -266,7 +244,6 @@ namespace AlCalc
             {
                 currentText = currentText.Remove(currentText.Length - 1, 1);
                 if (currentText.Length == 0) currentText = "0";
-                UpdateResult(currentText);
             }
             else
                 System.Media.SystemSounds.Beep.Play();
@@ -278,7 +255,6 @@ namespace AlCalc
             currentText = "0";
             currentNumber = 0;
             typeLastInput = LastInput.number;
-            UpdateResult(currentText);
         }
 
         //清除所有
@@ -291,7 +267,6 @@ namespace AlCalc
             binaryNumber = null;
             typeLastInput = LastInput.number;
             previousInputs.Clear();
-            UpdateResult(currentText);
         }
 
         //快捷键
