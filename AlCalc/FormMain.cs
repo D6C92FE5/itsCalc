@@ -323,6 +323,9 @@ namespace AlCalc
         {
             if (isError)
                 buttonClear_Click(buttonClear, null);
+
+            if (typeLastInput == LastInput.unaryOperators && previousInputs.Count > 0)
+                previousInputs.RemoveAt(previousInputs.Count - 1);
             currentText = "0";
             currentNumber = 0;
             typeLastInput = LastInput.number;
