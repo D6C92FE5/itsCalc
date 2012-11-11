@@ -129,7 +129,7 @@ namespace AlCalc
 
             //按了非数字键再按数字键会输入一个新的数字
             if (typeLastInput != LastInput.number)
-                buttonClearentry_Click(buttonClearentry, null);
+                buttonClearentry.PerformClick();
 
             //清除首位的0
             if (currentText == "0")
@@ -158,7 +158,7 @@ namespace AlCalc
 
             //上次按的不是数字先输入0
             if (typeLastInput != LastInput.number)
-                buttonNumbers_Click(buttonNumber0, null);
+                buttonNumber0.PerformClick();
 
             //最多可以有一个小数点
             if (!isInputedDot)
@@ -325,7 +325,7 @@ namespace AlCalc
         private void buttonClearentry_Click(object sender, EventArgs e)
         {
             if (isError)
-                buttonClear_Click(buttonClear, null);
+                buttonClear.PerformClick();
 
             if (typeLastInput == LastInput.unaryOperators && previousInputs.Count > 0)
                 previousInputs.RemoveAt(previousInputs.Count - 1);
@@ -353,90 +353,90 @@ namespace AlCalc
             switch (keyData)
             {
                 case Keys.Shift | Keys.D5:
-                    buttonUnaryOperators_Click(buttonPercent, null);
+                    buttonPercent.PerformClick();
                     break;
                 case Keys.F9:
-                    buttonUnaryOperators_Click(buttonInverse, null);
+                    buttonInverse.PerformClick();
                     break;
                 case Keys.Add:
                 case Keys.Shift | Keys.Oemplus:
-                    buttonBinaryOperators_Click(buttonPlus, null);
+                    buttonPlus.PerformClick();
                     break;
                 case Keys.Subtract:
                 case Keys.OemMinus:
-                    buttonBinaryOperators_Click(buttonMinus, null);
+                    buttonMinus.PerformClick();
                     break;
                 case Keys.Multiply:
                 case Keys.Shift | Keys.D8:
-                    buttonBinaryOperators_Click(buttonMultiply, null);
+                    buttonMultiply.PerformClick();
                     break;
                 case Keys.Divide:
                 case Keys.OemQuestion:
-                    buttonBinaryOperators_Click(buttonDivide, null);
+                    buttonDivide.PerformClick();
                     break;
                 case Keys.R:
                 case Keys.Shift | Keys.R:
-                    buttonUnaryOperators_Click(buttonReciprocal, null);
+                    buttonReciprocal.PerformClick();
                     break;
                 case Keys.Shift | Keys.D2:
-                    buttonUnaryOperators_Click(buttonRadical, null);
+                    buttonRadical.PerformClick();
                     break;
                 case Keys.D0:
                 case Keys.NumPad0:
-                    buttonNumbers_Click(buttonNumber0, null);
+                    buttonNumber0.PerformClick();
                     break;
                 case Keys.D1:
                 case Keys.NumPad1:
-                    buttonNumbers_Click(buttonNumber1, null);
+                    buttonNumber1.PerformClick();
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
-                    buttonNumbers_Click(buttonNumber2, null);
+                    buttonNumber2.PerformClick();
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
-                    buttonNumbers_Click(buttonNumber3, null);
+                    buttonNumber3.PerformClick();
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
-                    buttonNumbers_Click(buttonNumber4, null);
+                    buttonNumber4.PerformClick();
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
-                    buttonNumbers_Click(buttonNumber5, null);
+                    buttonNumber5.PerformClick();
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
-                    buttonNumbers_Click(buttonNumber6, null);
+                    buttonNumber6.PerformClick();
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
-                    buttonNumbers_Click(buttonNumber7, null);
+                    buttonNumber7.PerformClick();
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
-                    buttonNumbers_Click(buttonNumber8, null);
+                    buttonNumber8.PerformClick();
                     break;
                 case Keys.D9:
                 case Keys.NumPad9:
-                    buttonNumbers_Click(buttonNumber9, null);
+                    buttonNumber9.PerformClick();
                     break;
                 case Keys.Enter:
                 case Keys.Oemplus:
-                    buttonEqual_Click(buttonEqual, null);
+                    buttonEqual.PerformClick();
                     break;
                 case Keys.OemPeriod:
                 case Keys.Decimal:
-                    buttonDot_Click(buttonDot, null);
+                    buttonDot.PerformClick();
                     break;
                 case Keys.Back:
-                    buttonBack_Click(buttonBack, null);
+                    buttonBack.PerformClick();
                     break;
                 case Keys.Escape:
-                    buttonClear_Click(buttonClear, null);
+                    buttonClear.PerformClick();
                     break;
                 case Keys.Delete:
-                    buttonClearentry_Click(buttonClearentry, null);
+                    buttonClearentry.PerformClick();
                     break;
                 case Keys.Tab:
                 case Keys.Up:
